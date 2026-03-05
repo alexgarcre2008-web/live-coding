@@ -4,8 +4,6 @@ services:
     build: ./backend
     ports:
       - "3000:3000"  # Mapea el puerto 3000 del contenedor al 3000 de tu PC
-    volumes:
-      - ./backend:/app # Sincroniza tu código para ver cambios en vivo
     environment:
       - NODE_ENV=production
 

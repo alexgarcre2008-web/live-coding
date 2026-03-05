@@ -989,6 +989,30 @@ const CODES = [
 let ME = null;
 let starVal = 0;
 let postCount = 3;
+const API = "http://localhost:3000";
+let TOKEN = null;
+
+async function apiFetch(path, options = {}) {
+
+  const headers = {
+    "Content-Type": "application/json",
+    ...(options.headers || {})
+  };
+
+  if (TOKEN) {
+    headers["Authorization"] = "Bearer " + TOKEN;
+  }
+
+  const res = await fetch(API + path, {
+    ...options,
+    headers
+  });
+
+  const data = await res.json().catch(() => ({}));
+
+  return { res, data };
+}
+
 
 // ════════════════════════════════════════════
 //  AUTH
@@ -1018,45 +1042,72 @@ function fErr(iid, eid, msg) {
   const e=document.getElementById(eid); e.textContent=msg; e.style.display='block';
 }
 
-function doLogin() {
-  clearGErr();
-  const u=document.getElementById('lUser').value.trim();
-  const p=document.getElementById('lPass').value;
-  let ok=true;
-  if(!u){fErr('lUser','lUserE','Usuario requerido');ok=false;}
-  if(!p){fErr('lPass','lPassE','Contraseña requerida');ok=false;}
-  if(!ok) return;
-  const usr=USERS.find(x=>x.username===u);
-  if(!usr||usr.password!==p){gErr('Credenciales incorrectas');document.getElementById('lPass').value='';return;}
-  enterForum(usr);
+async function doLogin() {
+
+clearGErr();
+
+const u = document.getElementById('lUser').value.trim();
+const p = document.getElementById('lPass').value;
+
+if(!u || !p){
+  gErr("Introduce usuario y contraseña");
+  return;
 }
 
-function doRegister() {
-  clearGErr();
-  const code  = document.getElementById('rCode').value.trim().toUpperCase();
-  const uname = document.getElementById('rUser').value.trim();
-  const pass  = document.getElementById('rPass').value;
-  const pass2 = document.getElementById('rPass2').value;
-  let ok=true;
-  if(!code){fErr('rCode','rCodeE','Código requerido');ok=false;}
-  if(uname.length<3){fErr('rUser','rUserE','Mínimo 3 caracteres');ok=false;}
-  if(pass.length<6){fErr('rPass','rPassE','Mínimo 6 caracteres');ok=false;}
-  if(pass!==pass2){fErr('rPass2','rPass2E','No coinciden');ok=false;}
-  if(!ok) return;
+const {res,data} = await apiFetch("/auth/login",{
+  method:"POST",
+  body:JSON.stringify({
+    identifier:u,
+    password:p
+  })
+});
 
-  const codeObj = CODES.find(c=>c.code===code&&!c.usedBy);
-  if(!codeObj){gErr('Código inválido o ya usado');return;}
-  if(USERS.find(x=>x.username===uname)){gErr('Ese usuario ya existe');return;}
-
-  const newUser={username:uname, password:pass, rank:codeObj.rank, karma:0};
-  USERS.push(newUser);
-  codeObj.usedBy=uname;
-
-  showToast(`✓ Cuenta creada con rango ${RANKS[codeObj.rank].label}`);
-  updateCodesCount();
-  setTimeout(()=>{gTab('in');document.getElementById('lUser').value=uname;},700);
+if(!res.ok){
+  gErr("Credenciales incorrectas");
+  return;
 }
 
+TOKEN = data.token;
+
+enterForum({
+  username:u,
+  rank:"member",
+  karma:0
+});
+
+}
+
+async function doRegister() {
+
+clearGErr();
+
+const uname = document.getElementById('rUser').value.trim();
+const pass  = document.getElementById('rPass').value;
+const pass2 = document.getElementById('rPass2').value;
+
+if(pass !== pass2){
+  gErr("Las contraseñas no coinciden");
+  return;
+}
+
+const {res,data} = await apiFetch("/auth/register",{
+  method:"POST",
+  body:JSON.stringify({
+    identifier:uname,
+    password:pass
+  })
+});
+
+if(!res.ok){
+  gErr(data.error || "Error en registro");
+  return;
+}
+
+showToast("Cuenta creada");
+
+gTab('in');
+
+}
 function enterForum(usr) {
   ME=usr;
   document.getElementById('authGate').style.animation='fadeOut .25s ease forwards';
@@ -1192,6 +1243,13 @@ function closePostModal(){document.getElementById('postModal').classList.remove(
 function submitPost(){
   const title=document.getElementById('pTitle').value.trim();
   const body=document.getElementById('pBody').value.trim();
+  apiFetch("/messages",{
+  method:"POST",
+  body:JSON.stringify({
+    user_id:1,
+    text:title + " - " + body
+  })
+});
   if(!title) return showToast('El título es obligatorio',true);
   const selectedFlair=[...document.querySelectorAll('#postModal .chip.on')].map(c=>c.dataset.flair||c.textContent.trim());
   const id='pc-'+Date.now();
